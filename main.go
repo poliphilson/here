@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/poliphilson/here/models"
@@ -10,13 +11,19 @@ import (
 )
 
 func main() {
-	db, err := initDb()
-	if err != nil {
-		panic("Init database error.")
+	db := initDb()
+	err1 := db.AutoMigrate(&models.User{})
+	if err1 != nil {
+		panic(err1.Error())
 	}
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Here{})
-	db.AutoMigrate(&models.Point{})
+	err2 := db.AutoMigrate(&models.Here{})
+	if err2 != nil {
+		panic(err2.Error())
+	}
+	err3 := db.AutoMigrate(&models.Point{})
+	if err3 != nil {
+		panic(err3.Error())
+	}
 
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
@@ -27,8 +34,17 @@ func main() {
 	r.Run()
 }
 
-func initDb() (*gorm.DB, error) {
-	dsn := "root:rbdhks12@tcp(34.64.219.30:3306)/how_about_here?charset=utf8mb4&parseTime=True&loc=Local"
+func initDb() *gorm.DB {
+	user := os.Getenv("DBUSER")
+	pass := os.Getenv("DBPASS")
+	host := os.Getenv("DBHOST")
+	port := os.Getenv("DBPORT")
+	dbName := os.Getenv("DBNAME")
+
+	dsn := user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	return db, err
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
 }

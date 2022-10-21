@@ -21,8 +21,8 @@ func SuccessfullySignUp(c *gin.Context) {
 }
 
 func EmailDoesNotExist(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusOK,
+	c.JSON(http.StatusUnauthorized, gin.H{
+		"code":    http.StatusUnauthorized,
 		"message": "This email is not registered.",
 	})
 }
@@ -35,8 +35,8 @@ func SuccessfullySignIn(c *gin.Context) {
 }
 
 func FailedSignIn(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusOK,
+	c.JSON(http.StatusUnauthorized, gin.H{
+		"code":    http.StatusUnauthorized,
 		"message": "Failed to sign in.",
 	})
 }

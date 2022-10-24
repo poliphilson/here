@@ -61,7 +61,6 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	//aToken, rToken, err := CreateJWT(user.UID, user.Email)
 	aToken, err := CreateAccessToken(user.UID, user.Email)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
@@ -78,8 +77,8 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("access-token", aToken, 60*60, "/", "localhost", false, true)
-	c.SetCookie("refresh-token", rToken, 60*60*24, "/", "localhost", false, true)
+	c.SetCookie("access_token", aToken, 60*60, "/", "localhost", false, true)
+	c.SetCookie("refresh_token", rToken, 60*60*24, "/", "localhost", false, true)
 
 	response.SuccessfullySignIn(c, status.StatusOK)
 }

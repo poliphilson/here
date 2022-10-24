@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	datatype "github.com/poliphilson/here/data_type"
+	datatype "github.com/poliphilson/here/datatype"
 )
 
 type Point struct {

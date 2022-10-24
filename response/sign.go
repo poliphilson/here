@@ -6,37 +6,50 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func EmailAlreadyExists(c *gin.Context) {
+func EmailAlreadyExists(c *gin.Context, code int) {
 	c.JSON(http.StatusConflict, gin.H{
-		"code":    http.StatusConflict,
-		"message": "This email already exists.",
+		"http_code": http.StatusConflict,
+		"here_code": code,
+		"message":   "This email already exists.",
 	})
 }
 
-func SuccessfullySignUp(c *gin.Context) {
+func SuccessfullySignUp(c *gin.Context, code int) {
 	c.JSON(http.StatusCreated, gin.H{
-		"code":    http.StatusCreated,
-		"message": "Successfully sign up.",
+		"http_code": http.StatusCreated,
+		"here_code": code,
+		"message":   "Successfully sign up.",
 	})
 }
 
-func EmailDoesNotExist(c *gin.Context) {
+func EmailDoesNotExist(c *gin.Context, code int) {
 	c.JSON(http.StatusUnauthorized, gin.H{
-		"code":    http.StatusUnauthorized,
-		"message": "This email is not registered.",
+		"http_code": http.StatusUnauthorized,
+		"here_code": code,
+		"message":   "This email is not registered.",
 	})
 }
 
-func SuccessfullySignIn(c *gin.Context) {
+func SuccessfullySignIn(c *gin.Context, code int) {
 	c.JSON(http.StatusOK, gin.H{
-		"code":    http.StatusOK,
-		"message": "Successfully sign in.",
+		"http_code": http.StatusOK,
+		"here_code": code,
+		"message":   "Successfully sign in.",
 	})
 }
 
-func FailedSignIn(c *gin.Context) {
+func FailedSignIn(c *gin.Context, code int) {
 	c.JSON(http.StatusUnauthorized, gin.H{
-		"code":    http.StatusUnauthorized,
-		"message": "Failed to sign in.",
+		"http_code": http.StatusUnauthorized,
+		"here_code": code,
+		"message":   "Failed to sign in.",
+	})
+}
+
+func SeccessfullySignOut(c *gin.Context, code int) {
+	c.JSON(http.StatusOK, gin.H{
+		"http_code": http.StatusOK,
+		"here_code": code,
+		"message":   "Successfully sign out.",
 	})
 }

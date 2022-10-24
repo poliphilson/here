@@ -6,9 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InternalServerError(c *gin.Context) {
+func InternalServerError(c *gin.Context, code int) {
 	c.JSON(http.StatusInternalServerError, gin.H{
-		"code":    http.StatusInternalServerError,
-		"message": "Internal server error.",
+		"http_code": http.StatusInternalServerError,
+		"here_code": code,
+		"message":   "Internal server error.",
 	})
 }

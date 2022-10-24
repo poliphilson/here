@@ -11,8 +11,10 @@ import (
 	"github.com/poliphilson/here/status"
 )
 
+var secret []byte = []byte(os.Getenv("SECRET_KEY"))
+
 func VerifyAccessToken(c *gin.Context) {
-	cookie, err := c.Request.Cookie("access-token")
+	cookie, err := c.Request.Cookie("access_token")
 	if err != nil {
 		response.FailedSignIn(c, status.FailedSignIn)
 		log.Println("Fail to get access-token cookie.")
@@ -28,8 +30,6 @@ func VerifyAccessToken(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
-	secret := []byte(os.Getenv("SECRET_KEY"))
 
 	token, err := jwt.ParseWithClaims(aToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
@@ -64,7 +64,7 @@ func VerifyAccessToken(c *gin.Context) {
 }
 
 func RefreshAccessToken(c *gin.Context) {
-	cookie, err := c.Request.Cookie("refresh-token")
+	rCookie, err := c.Request.Cookie("refresh_token")
 	if err != nil {
 		response.FailedSignIn(c, status.FailedSignIn)
 		log.Println("Fail to get refresh-token cookie.")
@@ -72,11 +72,53 @@ func RefreshAccessToken(c *gin.Context) {
 		return
 	}
 
-	rToken := cookie.Value
-	result := VerifyRefreshToken(rToken)
-	if !result {
+	aCookie, err := c.Request.Cookie("access_token")
+	if err != nil {
 		response.FailedSignIn(c, status.FailedSignIn)
-		log.Println("Fail to verify refresh token.")
+		log.Println("Fail to get access-token cookie.")
+		log.Println(err.Error())
+		return
+	}
+
+	aToken := aCookie.Value
+	token, err := jwt.ParseWithClaims(aToken, &AccessTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if claims, ok := token.Claims.(*AccessTokenClaims); ok && token.Valid {
+		response.BadRequset(c, status.StatusOK)
+		log.Println("Access token is not expired.")
+		return
+	} else if v, ok := err.(*jwt.ValidationError); ok {
+		if v.Errors == jwt.ValidationErrorExpired {
+			rToken := rCookie.Value
+			result := VerifyRefreshToken(rToken)
+			if !result {
+				response.FailedSignIn(c, status.FailedSignIn)
+				log.Println("Fail to verify refresh token.")
+				return
+			}
+
+			newAToken, err := CreateAccessToken(claims.Uid, claims.Email)
+			if err != nil {
+				response.InternalServerError(c, status.InternalError)
+				log.Println("Fail to create new access token.")
+				log.Println(err.Error())
+				return
+			}
+
+			c.SetCookie("access_token", newAToken, 60*60, "/", "localhost", false, true)
+			response.Ok(c, status.StatusOK)
+			return
+		} else {
+			response.FailedSignIn(c, status.FailedSignIn)
+			log.Println("Fail to verify access token.")
+			log.Println(err.Error())
+			return
+		}
+	} else {
+		response.FailedSignIn(c, status.FailedSignIn)
+		log.Println("Can't handle jwt token error.")
+		log.Println(err.Error())
 		return
 	}
 }
@@ -86,8 +128,6 @@ func VerifyRefreshToken(rToken string) bool {
 		log.Println("Refresh token is empty.")
 		return false
 	}
-
-	secret := []byte(os.Getenv("SECRET_KEY"))
 
 	token, err := jwt.ParseWithClaims(rToken, &RefreshTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
@@ -103,13 +143,11 @@ func VerifyRefreshToken(rToken string) bool {
 }
 
 func CreateAccessToken(uid int, email string) (string, error) {
-	secret := []byte(os.Getenv("SECRET_KEY"))
-
 	aClaims := AccessTokenClaims{
 		Uid:   uid,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 1)),
 		},
 	}
 	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, aClaims)
@@ -122,8 +160,6 @@ func CreateAccessToken(uid int, email string) (string, error) {
 }
 
 func CreateRefreshToken() (string, error) {
-	secret := []byte(os.Getenv("SECRET_KEY"))
-
 	rClaims := RefreshTokenClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),

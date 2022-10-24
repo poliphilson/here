@@ -11,17 +11,17 @@ import (
 
 func init() {
 	db := repository.Connect()
-	err1 := db.AutoMigrate(&models.User{})
-	if err1 != nil {
-		panic(err1.Error())
+	err := db.AutoMigrate(&models.User{})
+	if err != nil {
+		panic(err.Error())
 	}
-	err2 := db.AutoMigrate(&models.Here{})
-	if err2 != nil {
-		panic(err2.Error())
+	err = db.AutoMigrate(&models.Here{})
+	if err != nil {
+		panic(err.Error())
 	}
-	err3 := db.AutoMigrate(&models.Point{})
-	if err3 != nil {
-		panic(err3.Error())
+	err = db.AutoMigrate(&models.Point{})
+	if err != nil {
+		panic(err.Error())
 	}
 }
 

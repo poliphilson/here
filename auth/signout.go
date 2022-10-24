@@ -7,8 +7,8 @@ import (
 )
 
 func SignOut(c *gin.Context) {
-	c.SetCookie("access-token", "", -1, "/", "localhost", false, true)
-	c.SetCookie("refresh-token", "", -1, "/", "localhost", false, true)
+	c.SetCookie("access_token", "", -1, "/", "localhost", false, true)
+	c.SetCookie("refresh_token", "", -1, "/", "localhost", false, true)
 
 	response.SeccessfullySignOut(c, status.StatusOK)
 }

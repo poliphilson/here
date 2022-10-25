@@ -11,6 +11,16 @@ import (
 	"github.com/poliphilson/here/status"
 )
 
+type AccessTokenClaims struct {
+	Uid   int    `json:"uid"`
+	Email string `json:"email"`
+	jwt.RegisteredClaims
+}
+
+type RefreshTokenClaims struct {
+	jwt.RegisteredClaims
+}
+
 var secret []byte = []byte(os.Getenv("SECRET_KEY"))
 
 func VerifyAccessToken(c *gin.Context) {

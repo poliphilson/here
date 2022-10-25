@@ -27,7 +27,7 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	db := repository.Connect()
+	db := repository.Mysql()
 
 	var exists bool
 	err = db.Model(&models.User{}).Select("count(*) > 0").Where("email = ?", form.Email).Find(&exists).Error

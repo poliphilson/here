@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-func Connect() *gorm.DB {
+func Mysql() *gorm.DB {
 
 	user := os.Getenv("DBUSER")
 	pass := os.Getenv("DBPASS")
@@ -26,3 +26,5 @@ func Connect() *gorm.DB {
 	}
 	return db
 }
+
+func Redis() {}

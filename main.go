@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	db := repository.Connect()
+	db := repository.Mysql()
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
 		panic(err.Error())

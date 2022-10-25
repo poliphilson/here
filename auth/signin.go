@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/poliphilson/here/models"
 	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
@@ -15,16 +14,6 @@ import (
 type signInForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
-}
-
-type AccessTokenClaims struct {
-	Uid   int    `json:"uid"`
-	Email string `json:"email"`
-	jwt.RegisteredClaims
-}
-
-type RefreshTokenClaims struct {
-	jwt.RegisteredClaims
 }
 
 func SignIn(c *gin.Context) {
@@ -38,7 +27,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	db := repository.Connect()
+	db := repository.Mysql()
 
 	var user models.User
 	err = db.Where("email = ?", form.Email).Find(&user).Error

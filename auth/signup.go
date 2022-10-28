@@ -27,10 +27,10 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	db := repository.Mysql()
+	mysqlClient := repository.Mysql()
 
 	var exists bool
-	err = db.Model(&models.User{}).Select("count(*) > 0").Where("email = ?", form.Email).Find(&exists).Error
+	err = mysqlClient.Model(&models.User{}).Select("count(*) > 0").Where("email = ?", form.Email).Find(&exists).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Select email error.")
@@ -53,7 +53,7 @@ func SignUp(c *gin.Context) {
 	}
 	form.Password = hashedpw
 
-	err = db.Create(&models.User{Email: form.Email, Password: form.Password}).Error
+	err = mysqlClient.Create(&models.User{Email: form.Email, Password: form.Password}).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Insert account error.")

@@ -27,10 +27,10 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	db := repository.Mysql()
+	mysqlClient := repository.Mysql()
 
 	var user models.User
-	err = db.Where("email = ?", form.Email).Find(&user).Error
+	err = mysqlClient.Where("email = ?", form.Email).Find(&user).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Select email error.")

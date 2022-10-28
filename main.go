@@ -10,16 +10,16 @@ import (
 )
 
 func init() {
-	db := repository.Mysql()
-	err := db.AutoMigrate(&models.User{})
+	mysqlClient := repository.Mysql()
+	err := mysqlClient.AutoMigrate(&models.User{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = db.AutoMigrate(&models.Here{})
+	err = mysqlClient.AutoMigrate(&models.Here{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = db.AutoMigrate(&models.Point{})
+	err = mysqlClient.AutoMigrate(&models.Point{})
 	if err != nil {
 		panic(err.Error())
 	}

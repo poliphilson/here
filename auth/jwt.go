@@ -1,12 +1,15 @@
 package auth
 
 import (
+	"context"
 	"log"
 	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
+	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -18,6 +21,7 @@ type AccessTokenClaims struct {
 }
 
 type RefreshTokenClaims struct {
+	Uuid string
 	jwt.RegisteredClaims
 }
 
@@ -64,7 +68,7 @@ func VerifyAccessToken(c *gin.Context) {
 		}
 	} else {
 		response.FailedSignIn(c, status.FailedSignIn)
-		log.Println("Can't handle jwt token error.")
+		log.Println("Can't handle jwt.")
 		log.Println(err.Error())
 		c.Abort()
 		return
@@ -127,7 +131,7 @@ func RefreshAccessToken(c *gin.Context) {
 		}
 	} else {
 		response.FailedSignIn(c, status.FailedSignIn)
-		log.Println("Can't handle jwt token error.")
+		log.Println("Can't handle jwt.")
 		log.Println(err.Error())
 		return
 	}
@@ -143,10 +147,18 @@ func VerifyRefreshToken(rToken string) bool {
 		return []byte(secret), nil
 	})
 
-	if _, ok := token.Claims.(*RefreshTokenClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(*RefreshTokenClaims); ok && token.Valid {
+		rUuid := claims.Uuid
+		redisClient := repository.Redis()
+		err = redisClient.Get(context.Background(), rUuid).Err()
+		if err != nil {
+			log.Println("Fail to get refresh token uuid from redis.")
+			log.Println(err.Error())
+			return false
+		}
 		return true
 	} else {
-		log.Println("Fail to verify refresh token.")
+		log.Println("Can't handle jwt.")
 		log.Println(err.Error())
 		return false
 	}
@@ -157,7 +169,7 @@ func CreateAccessToken(uid int, email string) (string, error) {
 		Uid:   uid,
 		Email: email,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 1)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},
 	}
 	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, aClaims)
@@ -170,9 +182,11 @@ func CreateAccessToken(uid int, email string) (string, error) {
 }
 
 func CreateRefreshToken() (string, error) {
+	rUuid := uuid.New().String()
 	rClaims := RefreshTokenClaims{
+		Uuid: rUuid,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 72)),
 		},
 	}
 	temp := jwt.NewWithClaims(jwt.SigningMethodHS256, rClaims)
@@ -180,5 +194,24 @@ func CreateRefreshToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	redisClient := repository.Redis()
+	err = redisClient.Set(context.Background(), rUuid, rToken, time.Duration(72)*time.Hour).Err()
+	if err != nil {
+		return "", err
+	}
 	return rToken, nil
+}
+
+func DeleteRefreshTokenFromRedis(rToken string) {
+	token, _ := jwt.ParseWithClaims(rToken, &RefreshTokenClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+
+	if claims, ok := token.Claims.(*RefreshTokenClaims); ok && token.Valid {
+		rUuid := claims.Uuid
+		redisClient := repository.Redis()
+		redisClient.Del(context.Background(), rUuid)
+	} else {
+		log.Println("Can't handle jwt.")
+	}
 }

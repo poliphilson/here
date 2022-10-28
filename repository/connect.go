@@ -2,14 +2,15 @@ package repository
 
 import (
 	"os"
+	"strconv"
 
+	"github.com/go-redis/redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
 func Mysql() *gorm.DB {
-
 	user := os.Getenv("DBUSER")
 	pass := os.Getenv("DBPASS")
 	host := os.Getenv("DBHOST")
@@ -27,4 +28,19 @@ func Mysql() *gorm.DB {
 	return db
 }
 
-func Redis() {}
+func Redis() *redis.Client {
+	host := os.Getenv("REDIS_DBHOST")
+	port := os.Getenv("REDIS_DBPORT")
+	pass := os.Getenv("REDIS_DBPASS")
+	dbName, err := strconv.Atoi(os.Getenv("REDIS_DBNAME"))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	db := redis.NewClient(&redis.Options{
+		Addr:     host + ":" + port,
+		Password: pass,
+		DB:       dbName,
+	})
+	return db
+}

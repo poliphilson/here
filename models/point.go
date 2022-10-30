@@ -11,7 +11,7 @@ type Point struct {
 	Uid         int  `gorm:"not null"`
 	User        User `gorm:"foreignKey:Uid"`
 	Description string
-	Date        time.Time         `gorm:"not null"`
+	CreatedAt   time.Time         `gorm:"not null"`
 	Location    datatype.Location `gorm:"not null"`
 	Delete      bool              `gorm:"default:false;not null"`
 	Version     int               `gorm:"default:0;not null"`

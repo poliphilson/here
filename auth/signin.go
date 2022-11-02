@@ -66,7 +66,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("access_token", aToken, 60*60*24, "/", "localhost", false, true)
+	c.SetCookie("access_token", aToken, 60*60*72, "/", "localhost", false, true)
 	c.SetCookie("refresh_token", rToken, 60*60*72, "/", "localhost", false, true)
 
 	response.SuccessfullySignIn(c, status.StatusOK)

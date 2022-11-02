@@ -19,8 +19,8 @@ import (
 
 type GetHere struct {
 	Contents string                  `form:"contents"`
-	X        float32                 `form:"x"`
-	Y        float32                 `form:"y"`
+	X        float64                 `form:"x"`
+	Y        float64                 `form:"y"`
 	Images   []*multipart.FileHeader `form:"image[]"`
 	Videos   []*multipart.FileHeader `form:"video[]"`
 }

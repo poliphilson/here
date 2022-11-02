@@ -11,11 +11,11 @@ import (
 )
 
 func Mysql() *gorm.DB {
-	user := os.Getenv("DBUSER")
-	pass := os.Getenv("DBPASS")
-	host := os.Getenv("DBHOST")
-	port := os.Getenv("DBPORT")
-	dbName := os.Getenv("DBNAME")
+	user := os.Getenv("MYSQL_DBUSER")
+	pass := os.Getenv("MYSQL_DBPASS")
+	host := os.Getenv("MYSQL_DBHOST")
+	port := os.Getenv("MYSQL_DBPORT")
+	dbName := os.Getenv("MYSQL_DBNAME")
 
 	dsn := user + ":" + pass + "@tcp(" + host + ":" + port + ")/" + dbName + "?charset=utf8mb4&parseTime=True&loc=Local"
 

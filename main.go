@@ -63,5 +63,6 @@ func main() {
 		})
 	})
 	authMiddle.POST("/upload", here.Upload)
+	authMiddle.GET("/list", here.List)
 	r.Run()
 }

@@ -62,7 +62,9 @@ func main() {
 			"message": data,
 		})
 	})
-	authMiddle.POST("/upload", here.Upload)
-	authMiddle.GET("/list", here.List)
+	authMiddle.POST("/here/upload", here.Upload)
+	authMiddle.GET("/here/list", here.List)
+	authMiddle.DELETE("/here/:hid", here.Delete)
+	authMiddle.GET("/here/:hid", here.Detail)
 	r.Run()
 }

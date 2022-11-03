@@ -108,7 +108,7 @@ func createHere(here models.Here, images []string, videos []string) error {
 
 		for _, imageName := range images {
 			form := models.HereImage{
-				Hid:   here.HID,
+				Hid:   here.Hid,
 				Image: imageName,
 			}
 			err := tx.Create(&form).Error
@@ -120,7 +120,7 @@ func createHere(here models.Here, images []string, videos []string) error {
 
 		for _, videoName := range videos {
 			form := models.HereVideo{
-				Hid:   here.HID,
+				Hid:   here.Hid,
 				Video: videoName,
 			}
 			err := tx.Create(&form).Error

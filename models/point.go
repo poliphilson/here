@@ -13,6 +13,6 @@ type Point struct {
 	Description string
 	CreatedAt   time.Time         `gorm:"not null"`
 	Location    datatype.Location `gorm:"not null"`
-	Delete      bool              `gorm:"default:false;not null"`
+	IsDeleted   bool              `gorm:"default:false;not null"`
 	Version     int               `gorm:"default:0;not null"`
 }

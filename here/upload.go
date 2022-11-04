@@ -30,7 +30,7 @@ func Upload(c *gin.Context) {
 	videoBase := os.Getenv("HERE_VIDEO_PATH")
 
 	var getHere GetHere
-	err := c.ShouldBind(&getHere)
+	err := c.Bind(&getHere)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		return
@@ -91,10 +91,11 @@ func Upload(c *gin.Context) {
 	err = createHere(hereForm, imageArray, videoArray)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
+		log.Println(err.Error())
 		return
 	}
 
-	response.Ok(c, status.StatusOK)
+	response.CreateOk(c, status.StatusOK)
 }
 
 func createHere(here models.Here, images []string, videos []string) error {
@@ -102,7 +103,6 @@ func createHere(here models.Here, images []string, videos []string) error {
 	return mysqlClient.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(&here).Error
 		if err != nil {
-			log.Println(err.Error())
 			return err
 		}
 
@@ -113,7 +113,6 @@ func createHere(here models.Here, images []string, videos []string) error {
 			}
 			err := tx.Create(&form).Error
 			if err != nil {
-				log.Println(err.Error())
 				return err
 			}
 		}
@@ -125,7 +124,6 @@ func createHere(here models.Here, images []string, videos []string) error {
 			}
 			err := tx.Create(&form).Error
 			if err != nil {
-				log.Println(err.Error())
 				return err
 			}
 		}

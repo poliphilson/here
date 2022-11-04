@@ -29,3 +29,11 @@ func Ok(c *gin.Context, code int) {
 		"message":   "Ok.",
 	})
 }
+
+func CreateOk(c *gin.Context, code int) {
+	c.JSON(http.StatusCreated, gin.H{
+		"http_code": http.StatusCreated,
+		"here_code": code,
+		"message":   "Ok.",
+	})
+}

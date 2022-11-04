@@ -8,6 +8,7 @@ import (
 	"github.com/poliphilson/here/auth"
 	"github.com/poliphilson/here/here"
 	"github.com/poliphilson/here/models"
+	"github.com/poliphilson/here/point"
 	"github.com/poliphilson/here/repository"
 )
 
@@ -56,15 +57,10 @@ func main() {
 
 	authMiddle := r.Group("/")
 	authMiddle.Use(auth.VerifyAccessToken)
-	authMiddle.GET("/test", func(c *gin.Context) {
-		data, _ := c.Get("email")
-		c.JSON(http.StatusOK, gin.H{
-			"message": data,
-		})
-	})
-	authMiddle.POST("/here/upload", here.Upload)
-	authMiddle.GET("/here/list", here.List)
+	authMiddle.POST("/here", here.Upload)
+	authMiddle.GET("/here", here.List)
 	authMiddle.DELETE("/here/:hid", here.Delete)
 	authMiddle.GET("/here/:hid", here.Detail)
+	authMiddle.POST("/point", point.Create)
 	r.Run()
 }

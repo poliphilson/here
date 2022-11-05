@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -10,6 +9,7 @@ import (
 	"github.com/poliphilson/here/models"
 	"github.com/poliphilson/here/point"
 	"github.com/poliphilson/here/repository"
+	"github.com/poliphilson/here/trash"
 	"github.com/poliphilson/here/user"
 )
 
@@ -43,29 +43,32 @@ func main() {
 
 	r := gin.Default()
 	r.MaxMultipartMemory = 8 << 20
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
+
 	r.POST("/signup", auth.SignUp)
 	r.POST("/signin", auth.SignIn)
 	r.POST("/signout", auth.SignOut)
 	r.POST("/refresh", auth.RefreshAccessToken)
 
-	r.Static("/image", hereImagePath)
-	r.Static("/video", hereVideoPath)
-
 	authMiddle := r.Group("/")
 	authMiddle.Use(auth.VerifyAccessToken)
+	authMiddle.Static("/image", hereImagePath)
+	authMiddle.Static("/video", hereVideoPath)
+
 	authMiddle.PATCH("/user", user.Edit)
+
 	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here", here.List)
 	authMiddle.DELETE("/here/:hid", here.Delete)
 	authMiddle.GET("/here/:hid", here.Detail)
+
 	authMiddle.GET("/point", point.List)
 	authMiddle.POST("/point", point.Create)
 	authMiddle.PATCH("/point/:pid", point.Edit)
 	authMiddle.DELETE("/point/:pid", point.Delete)
+
+	authMiddle.PATCH("/trash/here/:hid", trash.HereRecovery)
+	authMiddle.DELETE("/trash/here/:hid", trash.HereDelete)
+	authMiddle.PATCH("/trash/point/:pid", trash.PointRecovery)
+	authMiddle.DELETE("/trash/point/:pid", trash.PointDelete)
 	r.Run()
 }

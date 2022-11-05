@@ -50,7 +50,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	aToken, err := CreateAccessToken(user.UID, user.Email)
+	aToken, err := CreateAccessToken(user.UID, user.Email, user.ProfileImage)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Fail to create access token.")

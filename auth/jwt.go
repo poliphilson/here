@@ -15,8 +15,9 @@ import (
 )
 
 type AccessTokenClaims struct {
-	Uid   int    `json:"uid"`
-	Email string `json:"email"`
+	Uid          int    `json:"uid"`
+	Email        string `json:"email"`
+	ProfileImage string `json:"profile_image"`
 	jwt.RegisteredClaims
 }
 
@@ -112,7 +113,7 @@ func RefreshAccessToken(c *gin.Context) {
 				return
 			}
 
-			newAToken, err := CreateAccessToken(claims.Uid, claims.Email)
+			newAToken, err := CreateAccessToken(claims.Uid, claims.Email, claims.ProfileImage)
 			if err != nil {
 				response.InternalServerError(c, status.InternalError)
 				log.Println("Fail to create new access token.")
@@ -120,7 +121,7 @@ func RefreshAccessToken(c *gin.Context) {
 				return
 			}
 
-			c.SetCookie("access_token", newAToken, 60*60, "/", "localhost", false, true)
+			c.SetCookie("access_token", newAToken, 60*60*72, "/", "localhost", false, true)
 			response.Ok(c, status.StatusOK)
 			return
 		} else {
@@ -164,10 +165,11 @@ func VerifyRefreshToken(rToken string) bool {
 	}
 }
 
-func CreateAccessToken(uid int, email string) (string, error) {
+func CreateAccessToken(uid int, email string, fileName string) (string, error) {
 	aClaims := AccessTokenClaims{
-		Uid:   uid,
-		Email: email,
+		Uid:          uid,
+		Email:        email,
+		ProfileImage: fileName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},

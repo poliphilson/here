@@ -18,11 +18,12 @@ import (
 )
 
 type GetHere struct {
-	Contents string                  `form:"contents"`
-	X        float64                 `form:"x"`
-	Y        float64                 `form:"y"`
-	Images   []*multipart.FileHeader `form:"image[]"`
-	Videos   []*multipart.FileHeader `form:"video[]"`
+	Contents   string                  `form:"contents"`
+	X          float64                 `form:"x"`
+	Y          float64                 `form:"y"`
+	IsPrivated bool                    `form:"is_privated"`
+	Images     []*multipart.FileHeader `form:"image[]"`
+	Videos     []*multipart.FileHeader `form:"video[]"`
 }
 
 func Upload(c *gin.Context) {
@@ -47,7 +48,7 @@ func Upload(c *gin.Context) {
 
 		for _, file := range images {
 			fileName := filepath.Base(file.Filename)
-			rename := createUniqueFileName(fileName)
+			rename := CreateUniqueFileName(fileName)
 			if err := c.SaveUploadedFile(file, imageBase+"/"+rename); err != nil {
 				response.InternalServerError(c, status.InternalError)
 				log.Println(err.Error())
@@ -66,7 +67,7 @@ func Upload(c *gin.Context) {
 
 		for _, file := range videos {
 			fileName := filepath.Base(file.Filename)
-			rename := createUniqueFileName(fileName)
+			rename := CreateUniqueFileName(fileName)
 			if err := c.SaveUploadedFile(file, videoBase+"/"+rename); err != nil {
 				response.InternalServerError(c, status.InternalError)
 				log.Println(err.Error())
@@ -87,6 +88,7 @@ func Upload(c *gin.Context) {
 	hereForm.Uid = uid.(int)
 	hereForm.Contents = getHere.Contents
 	hereForm.Location = datatype.Location{X: getHere.X, Y: getHere.Y}
+	hereForm.IsPrivated = getHere.IsPrivated
 
 	err = createHere(hereForm, imageArray, videoArray)
 	if err != nil {
@@ -131,7 +133,7 @@ func createHere(here models.Here, images []string, videos []string) error {
 	})
 }
 
-func createUniqueFileName(fileName string) string {
+func CreateUniqueFileName(fileName string) string {
 	prefix := uuid.New().String()
 	suffix := time.Now().Format("20060102150405")
 	return prefix + "-" + suffix + "-" + fileName

@@ -58,7 +58,7 @@ func main() {
 
 	authMiddle := r.Group("/")
 	authMiddle.Use(auth.VerifyAccessToken)
-	authMiddle.PATCH("/user", user.Update)
+	authMiddle.PATCH("/user", user.Edit)
 	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here", here.List)
 	authMiddle.DELETE("/here/:hid", here.Delete)

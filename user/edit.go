@@ -14,11 +14,11 @@ import (
 	"github.com/poliphilson/here/status"
 )
 
-type UpdateUser struct {
+type EditUser struct {
 	Images *multipart.FileHeader `form:"image"`
 }
 
-func Update(c *gin.Context) {
+func Edit(c *gin.Context) {
 	imageBase := os.Getenv("HERE_IMAGE_PATH")
 
 	uid, exists := c.Get("uid")
@@ -33,17 +33,17 @@ func Update(c *gin.Context) {
 		return
 	}
 
-	var updateUser UpdateUser
-	err := c.Bind(&updateUser)
+	var editUser EditUser
+	err := c.Bind(&editUser)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())
 		return
 	}
 
-	profileImage := here.CreateUniqueFileName(updateUser.Images.Filename)
+	profileImage := here.CreateUniqueFileName(editUser.Images.Filename)
 
-	if err := c.SaveUploadedFile(updateUser.Images, imageBase+"/"+profileImage); err != nil {
+	if err := c.SaveUploadedFile(editUser.Images, imageBase+"/"+profileImage); err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())
 		return

@@ -10,6 +10,7 @@ import (
 	"github.com/poliphilson/here/models"
 	"github.com/poliphilson/here/point"
 	"github.com/poliphilson/here/repository"
+	"github.com/poliphilson/here/user"
 )
 
 func init() {
@@ -57,10 +58,14 @@ func main() {
 
 	authMiddle := r.Group("/")
 	authMiddle.Use(auth.VerifyAccessToken)
+	authMiddle.PATCH("/user", user.Update)
 	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here", here.List)
 	authMiddle.DELETE("/here/:hid", here.Delete)
 	authMiddle.GET("/here/:hid", here.Detail)
+	authMiddle.GET("/point", point.List)
 	authMiddle.POST("/point", point.Create)
+	authMiddle.PATCH("/point/:pid", point.Edit)
+	authMiddle.DELETE("/point/:pid", point.Delete)
 	r.Run()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Point struct {
-	PID         int  `gorm:"primaryKey;not null;column:pid"`
+	Pid         int  `gorm:"primaryKey;not null;column:pid"`
 	Uid         int  `gorm:"not null"`
 	User        User `gorm:"foreignKey:Uid"`
 	Description string

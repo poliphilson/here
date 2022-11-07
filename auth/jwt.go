@@ -53,6 +53,7 @@ func VerifyAccessToken(c *gin.Context) {
 	if claims, ok := token.Claims.(*AccessTokenClaims); ok && token.Valid {
 		c.Set("uid", claims.Uid)
 		c.Set("email", claims.Email)
+		c.Set("profile_image", claims.ProfileImage)
 	} else if v, ok := err.(*jwt.ValidationError); ok {
 		if v.Errors == jwt.ValidationErrorExpired {
 			response.FailedSignIn(c, status.ExpiredAccessToken)

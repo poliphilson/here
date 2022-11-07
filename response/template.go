@@ -28,3 +28,8 @@ type Point struct {
 	Description string            `json:"description"`
 	Location    datatype.Location `json:"location"`
 }
+
+type User struct {
+	Email        string `json:"email"`
+	ProfileImage string `json:"profile_image"`
+}

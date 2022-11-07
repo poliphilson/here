@@ -55,6 +55,7 @@ func main() {
 	authMiddle.Static("/video", hereVideoPath)
 
 	authMiddle.PATCH("/user", user.Edit)
+	authMiddle.GET("/user", user.Detail)
 
 	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here", here.List)

@@ -11,6 +11,8 @@ import (
 )
 
 func List(c *gin.Context) {
+	var err error
+	date := c.Query("date")
 	uid, exists := c.Get("uid")
 	if !exists {
 		response.InternalServerError(c, status.FailedSignIn)
@@ -20,7 +22,17 @@ func List(c *gin.Context) {
 	var simpleHereList []response.SimpleHere
 
 	mysqlClient := repository.Mysql()
-	err := mysqlClient.Model(&models.Here{}).Where("uid = ? AND is_deleted = ?", uid, false).Scan(&simpleHereList).Error
+	if date != "" {
+		err = mysqlClient.
+			Model(&models.Here{}).
+			Where("uid = ? AND is_deleted = ? AND DATE(created_at) = ? ", uid, false, date).
+			Scan(&simpleHereList).Error
+	} else {
+		err = mysqlClient.
+			Model(&models.Here{}).
+			Where("uid = ? AND is_deleted = ?", uid, false).
+			Scan(&simpleHereList).Error
+	}
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())

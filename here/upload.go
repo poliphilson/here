@@ -90,20 +90,22 @@ func Upload(c *gin.Context) {
 	hereForm.Location = datatype.Location{X: getHere.X, Y: getHere.Y}
 	hereForm.IsPrivated = getHere.IsPrivated
 
-	err = createHere(hereForm, imageArray, videoArray)
+	simpleHere, err := createHere(hereForm, imageArray, videoArray)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())
 		return
 	}
 
-	response.CreateOk(c, status.StatusOK)
+	response.CreateHere(c, simpleHere, status.StatusOK)
 }
 
-func createHere(here models.Here, images []string, videos []string) error {
+func createHere(here models.Here, images []string, videos []string) (response.SimpleHere, error) {
 	mysqlClient := repository.Mysql()
-	return mysqlClient.Transaction(func(tx *gorm.DB) error {
-		err := tx.Create(&here).Error
+	simpleHere := response.SimpleHere{}
+
+	err := mysqlClient.Transaction(func(tx *gorm.DB) error {
+		err := tx.Create(&here).Scan(&simpleHere).Error
 		if err != nil {
 			return err
 		}
@@ -131,6 +133,8 @@ func createHere(here models.Here, images []string, videos []string) error {
 		}
 		return nil
 	})
+
+	return simpleHere, err
 }
 
 func CreateUniqueFileName(fileName string) string {

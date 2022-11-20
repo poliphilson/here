@@ -21,3 +21,11 @@ func DetailHereOnMap(c *gin.Context, here DetailHere, code int) {
 		"data":      here,
 	})
 }
+
+func CreateHere(c *gin.Context, here SimpleHere, code int) {
+	c.JSON(http.StatusOK, gin.H{
+		"http_code": http.StatusOK,
+		"here_code": code,
+		"data":      here,
+	})
+}

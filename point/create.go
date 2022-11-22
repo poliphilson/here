@@ -11,8 +11,9 @@ import (
 )
 
 type GetPoint struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X           float64 `json:"x"`
+	Y           float64 `json:"y"`
+	Description string  `json:"description"`
 }
 
 func Create(c *gin.Context) {
@@ -34,6 +35,7 @@ func Create(c *gin.Context) {
 	pointForm.Uid = uid.(int)
 	pointForm.Location.X = getPoint.X
 	pointForm.Location.Y = getPoint.Y
+	pointForm.Description = getPoint.Description
 
 	err = createPoint(pointForm)
 	if err != nil {

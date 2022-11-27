@@ -50,7 +50,7 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	aToken, err := CreateAccessToken(user.UID, user.Email, user.ProfileImage)
+	aToken, err := CreateAccessToken(user.UID)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Fail to create access token.")
@@ -69,7 +69,11 @@ func SignIn(c *gin.Context) {
 	c.SetCookie("access_token", aToken, 60*60*72, "/", "localhost", false, true)
 	c.SetCookie("refresh_token", rToken, 60*60*72, "/", "localhost", false, true)
 
-	response.SuccessfullySignIn(c, status.StatusOK)
+	var userInformation response.User
+	userInformation.Email = user.Email
+	userInformation.ProfileImage = user.ProfileImage
+
+	response.SuccessfullySignIn(c, userInformation, status.StatusOK)
 }
 
 func checkPassword(hashVal, password string) bool {

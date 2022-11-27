@@ -114,7 +114,7 @@ func RefreshAccessToken(c *gin.Context) {
 				return
 			}
 
-			newAToken, err := CreateAccessToken(claims.Uid, claims.Email, claims.ProfileImage)
+			newAToken, err := CreateAccessToken(claims.Uid)
 			if err != nil {
 				response.InternalServerError(c, status.InternalError)
 				log.Println("Fail to create new access token.")
@@ -166,11 +166,9 @@ func VerifyRefreshToken(rToken string) bool {
 	}
 }
 
-func CreateAccessToken(uid int, email string, fileName string) (string, error) {
+func CreateAccessToken(uid int) (string, error) {
 	aClaims := AccessTokenClaims{
-		Uid:          uid,
-		Email:        email,
-		ProfileImage: fileName,
+		Uid: uid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},

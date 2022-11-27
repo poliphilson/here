@@ -35,6 +35,10 @@ func init() {
 	if err != nil {
 		panic(err.Error())
 	}
+	err = mysqlClient.AutoMigrate(&models.HereAddress{})
+	if err != nil {
+		panic(err.Error())
+	}
 }
 
 func main() {

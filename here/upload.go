@@ -21,6 +21,7 @@ type GetHere struct {
 	Contents   string                  `form:"contents"`
 	X          float64                 `form:"x"`
 	Y          float64                 `form:"y"`
+	Address    datatype.Address        `form:"address"`
 	IsPrivated bool                    `form:"is_privated"`
 	Images     []*multipart.FileHeader `form:"image[]"`
 	Videos     []*multipart.FileHeader `form:"video[]"`
@@ -90,7 +91,7 @@ func Upload(c *gin.Context) {
 	hereForm.Location = datatype.Location{X: getHere.X, Y: getHere.Y}
 	hereForm.IsPrivated = getHere.IsPrivated
 
-	simpleHere, err := createHere(hereForm, imageArray, videoArray)
+	simpleHere, err := createHere(hereForm, getHere.Address, imageArray, videoArray)
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())
@@ -100,12 +101,29 @@ func Upload(c *gin.Context) {
 	response.CreateHere(c, simpleHere, status.StatusOK)
 }
 
-func createHere(here models.Here, images []string, videos []string) (response.SimpleHere, error) {
+func createHere(here models.Here, address datatype.Address, images []string, videos []string) (response.SimpleHere, error) {
 	mysqlClient := repository.Mysql()
 	simpleHere := response.SimpleHere{}
 
 	err := mysqlClient.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(&here).Scan(&simpleHere).Error
+		if err != nil {
+			return err
+		}
+
+		addressForm := models.HereAddress{
+			Hid:             here.Hid,
+			Name:            address.Name,
+			Street:          address.Street,
+			Country:         address.Country,
+			AdminArea:       address.AdminArea,
+			SubArea:         address.SubArea,
+			Locality:        address.Locality,
+			SubLocality:     address.SubLocality,
+			Thoroughfare:    address.Thoroughfare,
+			SubThoroughfare: address.SubThoroughfare,
+		}
+		err = tx.Create(&addressForm).Error
 		if err != nil {
 			return err
 		}

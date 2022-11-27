@@ -17,9 +17,10 @@ type SimpleHere struct {
 }
 
 type DetailHere struct {
-	Here   SimpleHere `json:"here"`
-	Images []string   `json:"images"`
-	Videos []string   `json:"videos"`
+	Here    SimpleHere       `json:"here"`
+	Address datatype.Address `json:"address"`
+	Images  []string         `json:"images"`
+	Videos  []string         `json:"videos"`
 }
 
 type Point struct {

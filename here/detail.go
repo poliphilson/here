@@ -36,6 +36,11 @@ func Detail(c *gin.Context) {
 			return err
 		}
 
+		err = tx.Model(&models.HereAddress{}).Where("hid = ?", hid).Scan(&detailHere.Address).Error
+		if err != nil {
+			return err
+		}
+
 		if detailHere.Here.Image {
 			err := tx.Model(&models.HereImage{}).Select("image").Where("hid = ?", hid).Scan(&detailHere.Images).Error
 			if err != nil {

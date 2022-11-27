@@ -67,8 +67,10 @@ func main() {
 	authMiddle.PATCH("/point/:pid", point.Edit)
 	authMiddle.DELETE("/point/:pid", point.Delete)
 
+	authMiddle.GET("/trash/here", trash.HereList)
 	authMiddle.PATCH("/trash/here/:hid", trash.HereRecovery)
 	authMiddle.DELETE("/trash/here/:hid", trash.HereDelete)
+	authMiddle.GET("/trash/point", trash.PointList)
 	authMiddle.PATCH("/trash/point/:pid", trash.PointRecovery)
 	authMiddle.DELETE("/trash/point/:pid", trash.PointDelete)
 	r.Run()

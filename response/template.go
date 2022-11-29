@@ -34,6 +34,11 @@ type User struct {
 	Email        string `json:"email"`
 	ProfileImage string `json:"profile_image"`
 	Bio          string `json:"bio"`
+	Name         string `json:"name"`
+}
+
+type SignIn struct {
+	ProfileImage string `json:"profile_image"`
 }
 
 type EditUser struct {

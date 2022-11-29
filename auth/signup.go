@@ -14,6 +14,7 @@ import (
 type signUpForm struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+	Name     string `json:"name"`
 }
 
 func SignUp(c *gin.Context) {
@@ -53,7 +54,7 @@ func SignUp(c *gin.Context) {
 	}
 	form.Password = hashedpw
 
-	err = mysqlClient.Create(&models.User{Email: form.Email, Password: form.Password}).Error
+	err = mysqlClient.Create(&models.User{Email: form.Email, Password: form.Password, Name: form.Name}).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Insert account error.")

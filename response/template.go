@@ -31,10 +31,11 @@ type Point struct {
 }
 
 type User struct {
-	Email        string `json:"email"`
-	ProfileImage string `json:"profile_image"`
-	Bio          string `json:"bio"`
-	Name         string `json:"name"`
+	Email        string    `json:"email"`
+	ProfileImage string    `json:"profile_image"`
+	Bio          string    `json:"bio"`
+	Name         string    `json:"name"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type SignIn struct {

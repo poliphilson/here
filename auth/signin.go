@@ -72,6 +72,7 @@ func SignIn(c *gin.Context) {
 	var userInformation response.User
 	userInformation.Email = user.Email
 	userInformation.ProfileImage = user.ProfileImage
+	userInformation.Bio = user.Bio
 
 	response.SuccessfullySignIn(c, userInformation, status.StatusOK)
 }

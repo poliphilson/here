@@ -33,6 +33,7 @@ type Point struct {
 type User struct {
 	Email        string `json:"email"`
 	ProfileImage string `json:"profile_image"`
+	Bio          string `json:"bio"`
 }
 
 type EditUser struct {

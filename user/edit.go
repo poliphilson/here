@@ -11,10 +11,12 @@ import (
 	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
+	"gorm.io/gorm"
 )
 
 type EditUser struct {
 	Images *multipart.FileHeader `form:"image"`
+	Bio    string                `form:"bio"`
 }
 
 func Edit(c *gin.Context) {
@@ -34,23 +36,30 @@ func Edit(c *gin.Context) {
 		return
 	}
 
-	profileImage := here.CreateUniqueFileName(editUser.Images.Filename)
-
-	if err := c.SaveUploadedFile(editUser.Images, imageBase+"/"+profileImage); err != nil {
-		response.InternalServerError(c, status.InternalError)
-		log.Println(err.Error())
-		return
-	}
-
 	var user response.EditUser
 
 	mysqlClient := repository.Mysql()
-	err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("profile_image", profileImage).Scan(&user).Error
-	if err != nil {
-		response.InternalServerError(c, status.InternalError)
-		log.Println(err.Error())
-		return
-	}
+	err = mysqlClient.Transaction(func(tx *gorm.DB) error {
+		if editUser.Images != nil {
+			profileImage := here.CreateUniqueFileName(editUser.Images.Filename)
+			err := c.SaveUploadedFile(editUser.Images, imageBase+"/"+profileImage)
+			if err != nil {
+				return err
+			}
+			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("profile_image", profileImage).Scan(&user).Error
+			if err != nil {
+				return err
+			}
+		}
+
+		if editUser.Bio != "" {
+			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("bio", editUser.Bio).Scan(&user).Error
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 
 	response.EditUserInformation(c, user, status.StatusOK)
 }

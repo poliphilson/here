@@ -30,7 +30,7 @@ func EmailDoesNotExist(c *gin.Context, code int) {
 	})
 }
 
-func SuccessfullySignIn(c *gin.Context, user User, code int) {
+func SuccessfullySignIn(c *gin.Context, user SignIn, code int) {
 	c.JSON(http.StatusOK, gin.H{
 		"http_code": http.StatusOK,
 		"here_code": code,

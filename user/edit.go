@@ -17,6 +17,7 @@ import (
 type EditUser struct {
 	Images *multipart.FileHeader `form:"image"`
 	Bio    string                `form:"bio"`
+	Name   string                `form:"name"`
 }
 
 func Edit(c *gin.Context) {
@@ -54,6 +55,13 @@ func Edit(c *gin.Context) {
 
 		if editUser.Bio != "" {
 			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("bio", editUser.Bio).Scan(&user).Error
+			if err != nil {
+				return err
+			}
+		}
+
+		if editUser.Name != "" {
+			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("name", editUser.Name).Scan(&user).Error
 			if err != nil {
 				return err
 			}

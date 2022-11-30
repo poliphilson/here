@@ -45,4 +45,5 @@ type SignIn struct {
 type EditUser struct {
 	ProfileImage string `json:"profile_image"`
 	Bio          string `json:"bio"`
+	Name         string `json:"name"`
 }

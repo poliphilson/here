@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"golang.org/x/crypto/bcrypt"
@@ -28,10 +28,8 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-
 	var exists bool
-	err = mysqlClient.Model(&models.User{}).Select("count(*) > 0").Where("email = ?", form.Email).Find(&exists).Error
+	err = config.DB.Model(&models.User{}).Select("count(*) > 0").Where("email = ?", form.Email).Find(&exists).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Select email error.")
@@ -54,7 +52,7 @@ func SignUp(c *gin.Context) {
 	}
 	form.Password = hashedpw
 
-	err = mysqlClient.Create(&models.User{Email: form.Email, Password: form.Password, Name: form.Name}).Error
+	err = config.DB.Create(&models.User{Email: form.Email, Password: form.Password, Name: form.Name}).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Insert account error.")

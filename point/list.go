@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -32,8 +32,7 @@ func List(c *gin.Context) {
 
 	var pointList []response.Point
 
-	mysqlClient := repository.Mysql()
-	err = mysqlClient.
+	err = config.DB.
 		Model(&models.Point{}).Where("uid = ? AND is_deleted = ?", uid, false).
 		Order("created_at DESC").
 		Limit(limit).

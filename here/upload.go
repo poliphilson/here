@@ -9,9 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/datatype"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"gorm.io/gorm"
@@ -102,10 +102,9 @@ func Upload(c *gin.Context) {
 }
 
 func createHere(here models.Here, address datatype.Address, images []string, videos []string) (response.SimpleHere, error) {
-	mysqlClient := repository.Mysql()
 	simpleHere := response.SimpleHere{}
 
-	err := mysqlClient.Transaction(func(tx *gorm.DB) error {
+	err := config.DB.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(&here).Scan(&simpleHere).Error
 		if err != nil {
 			return err

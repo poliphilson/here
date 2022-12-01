@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -48,8 +48,7 @@ func Create(c *gin.Context) {
 }
 
 func createPoint(point models.Point) error {
-	mysqlClient := repository.Mysql()
-	err := mysqlClient.Create(&point).Error
+	err := config.DB.Create(&point).Error
 	if err != nil {
 		return err
 	}

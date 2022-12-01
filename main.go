@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/poliphilson/here/auth"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/here"
 	"github.com/poliphilson/here/models"
 	"github.com/poliphilson/here/point"
@@ -14,28 +15,28 @@ import (
 )
 
 func init() {
-	mysqlClient := repository.Mysql()
-	err := mysqlClient.AutoMigrate(&models.User{})
+	config.DB = repository.Mysql()
+	err := config.DB.AutoMigrate(&models.User{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = mysqlClient.AutoMigrate(&models.Here{})
+	err = config.DB.AutoMigrate(&models.Here{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = mysqlClient.AutoMigrate(&models.Point{})
+	err = config.DB.AutoMigrate(&models.Point{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = mysqlClient.AutoMigrate(&models.HereImage{})
+	err = config.DB.AutoMigrate(&models.HereImage{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = mysqlClient.AutoMigrate(&models.HereVideo{})
+	err = config.DB.AutoMigrate(&models.HereVideo{})
 	if err != nil {
 		panic(err.Error())
 	}
-	err = mysqlClient.AutoMigrate(&models.HereAddress{})
+	err = config.DB.AutoMigrate(&models.HereAddress{})
 	if err != nil {
 		panic(err.Error())
 	}

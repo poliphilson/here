@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -21,14 +21,13 @@ func List(c *gin.Context) {
 
 	var simpleHereList []response.SimpleHere
 
-	mysqlClient := repository.Mysql()
 	if date != "" {
-		err = mysqlClient.
+		err = config.DB.
 			Model(&models.Here{}).
 			Where("uid = ? AND is_deleted = ? AND DATE(created_at) = ? ", uid, false, date).
 			Scan(&simpleHereList).Error
 	} else {
-		err = mysqlClient.
+		err = config.DB.
 			Model(&models.Here{}).
 			Where("uid = ? AND is_deleted = ?", uid, false).
 			Scan(&simpleHereList).Error

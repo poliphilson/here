@@ -6,9 +6,9 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/here"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"gorm.io/gorm"
@@ -39,29 +39,28 @@ func Edit(c *gin.Context) {
 
 	var user response.EditUser
 
-	mysqlClient := repository.Mysql()
-	err = mysqlClient.Transaction(func(tx *gorm.DB) error {
+	err = config.DB.Transaction(func(tx *gorm.DB) error {
 		if editUser.Images != nil {
 			profileImage := here.CreateUniqueFileName(editUser.Images.Filename)
 			err := c.SaveUploadedFile(editUser.Images, imageBase+"/"+profileImage)
 			if err != nil {
 				return err
 			}
-			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("profile_image", profileImage).Scan(&user).Error
+			err = config.DB.Model(&models.User{}).Where("uid = ?", uid).Update("profile_image", profileImage).Scan(&user).Error
 			if err != nil {
 				return err
 			}
 		}
 
 		if editUser.Bio != "" {
-			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("bio", editUser.Bio).Scan(&user).Error
+			err = config.DB.Model(&models.User{}).Where("uid = ?", uid).Update("bio", editUser.Bio).Scan(&user).Error
 			if err != nil {
 				return err
 			}
 		}
 
 		if editUser.Name != "" {
-			err = mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Update("name", editUser.Name).Scan(&user).Error
+			err = config.DB.Model(&models.User{}).Where("uid = ?", uid).Update("name", editUser.Name).Scan(&user).Error
 			if err != nil {
 				return err
 			}

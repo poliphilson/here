@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"gorm.io/gorm"
@@ -29,8 +29,7 @@ func HereDelete(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-	err = mysqlClient.Transaction(func(tx *gorm.DB) error {
+	err = config.DB.Transaction(func(tx *gorm.DB) error {
 		err := tx.Where("hid = ?", hid).Delete(&models.HereImage{}).Error
 		if err != nil {
 			return err
@@ -81,8 +80,7 @@ func PointDelete(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-	result := mysqlClient.Where("pid = ? AND uid = ? AND is_deleted = ?", pid, uid, true).Delete(&models.Point{})
+	result := config.DB.Where("pid = ? AND uid = ? AND is_deleted = ?", pid, uid, true).Delete(&models.Point{})
 	if result.Error != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(result.Error.Error())

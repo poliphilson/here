@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -26,9 +26,7 @@ func HereRecovery(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-
-	err = mysqlClient.Model(&models.Here{}).Where("uid = ? AND hid = ?", uid, hid).Update("is_deleted", false).Error
+	err = config.DB.Model(&models.Here{}).Where("uid = ? AND hid = ?", uid, hid).Update("is_deleted", false).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())
@@ -53,9 +51,7 @@ func PointRecovery(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-
-	err = mysqlClient.Model(&models.Point{}).Where("uid = ? AND pid = ?", uid, pid).Update("is_deleted", false).Error
+	err = config.DB.Model(&models.Point{}).Where("uid = ? AND pid = ?", uid, pid).Update("is_deleted", false).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())

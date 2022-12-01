@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -38,9 +38,7 @@ func Edit(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-
-	err = mysqlClient.Model(&models.Point{}).Where("pid = ? AND uid = ?", pid, uid).Update("description", editPoint.Description).Error
+	err = config.DB.Model(&models.Point{}).Where("pid = ? AND uid = ?", pid, uid).Update("description", editPoint.Description).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println(err.Error())

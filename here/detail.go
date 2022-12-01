@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"gorm.io/gorm"
@@ -29,8 +29,7 @@ func Detail(c *gin.Context) {
 
 	var detailHere response.DetailHere
 
-	mysqlClient := repository.Mysql()
-	err = mysqlClient.Transaction(func(tx *gorm.DB) error {
+	err = config.DB.Transaction(func(tx *gorm.DB) error {
 		err := tx.Model(&models.Here{}).Where("uid = ? AND hid = ? AND is_deleted = ?", uid, hid, false).Scan(&detailHere.Here).Error
 		if err != nil {
 			return err

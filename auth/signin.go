@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 	"golang.org/x/crypto/bcrypt"
@@ -27,10 +27,8 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	mysqlClient := repository.Mysql()
-
 	var user models.User
-	err = mysqlClient.Where("email = ?", form.Email).Find(&user).Error
+	err = config.DB.Where("email = ?", form.Email).Find(&user).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		log.Println("Select email error.")

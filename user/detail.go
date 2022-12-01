@@ -2,8 +2,8 @@ package user
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/poliphilson/here/config"
 	"github.com/poliphilson/here/models"
-	"github.com/poliphilson/here/repository"
 	"github.com/poliphilson/here/response"
 	"github.com/poliphilson/here/status"
 )
@@ -17,8 +17,7 @@ func Detail(c *gin.Context) {
 
 	var user response.User
 
-	mysqlClient := repository.Mysql()
-	err := mysqlClient.Model(&models.User{}).Where("uid = ?", uid).Scan(&user).Error
+	err := config.DB.Model(&models.User{}).Where("uid = ?", uid).Scan(&user).Error
 	if err != nil {
 		response.InternalServerError(c, status.InternalError)
 		return

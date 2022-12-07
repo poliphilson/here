@@ -62,10 +62,11 @@ func main() {
 	authMiddle.PATCH("/user", user.Edit)
 	authMiddle.GET("/user", user.Detail)
 
-	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here", here.List)
-	authMiddle.DELETE("/here/:hid", here.Delete)
+	authMiddle.POST("/here", here.Upload)
 	authMiddle.GET("/here/:hid", here.Detail)
+	authMiddle.PATCH("/here/:hid", here.Edit)
+	authMiddle.DELETE("/here/:hid", here.Delete)
 
 	authMiddle.GET("/point", point.List)
 	authMiddle.POST("/point", point.Create)

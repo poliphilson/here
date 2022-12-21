@@ -18,6 +18,7 @@ import (
 )
 
 type GetHere struct {
+	CreatedAt  string                  `form:"created_at"`
 	Contents   string                  `form:"contents"`
 	X          float64                 `form:"x"`
 	Y          float64                 `form:"y"`
@@ -86,6 +87,16 @@ func Upload(c *gin.Context) {
 		return
 	}
 
+	if getHere.CreatedAt != "" {
+		createdAt, err := time.ParseInLocation("2006-01-02 15:04:05", getHere.CreatedAt, time.Local)
+		if err != nil {
+			log.Println(err.Error())
+			response.InternalServerError(c, status.InternalError)
+			return
+		}
+		hereForm.CreatedAt = createdAt
+	}
+
 	hereForm.Uid = uid.(int)
 	hereForm.Contents = getHere.Contents
 	hereForm.Location = datatype.Location{X: getHere.X, Y: getHere.Y}
@@ -107,6 +118,7 @@ func createHere(here models.Here, address datatype.Address, images []string, vid
 	err := config.DB.Transaction(func(tx *gorm.DB) error {
 		err := tx.Create(&here).Scan(&simpleHere).Error
 		if err != nil {
+			log.Println(err.Error())
 			return err
 		}
 
@@ -124,6 +136,7 @@ func createHere(here models.Here, address datatype.Address, images []string, vid
 		}
 		err = tx.Create(&addressForm).Error
 		if err != nil {
+			log.Println(err.Error())
 			return err
 		}
 
@@ -134,6 +147,7 @@ func createHere(here models.Here, address datatype.Address, images []string, vid
 			}
 			err := tx.Create(&form).Error
 			if err != nil {
+				log.Println(err.Error())
 				return err
 			}
 		}
@@ -145,6 +159,7 @@ func createHere(here models.Here, address datatype.Address, images []string, vid
 			}
 			err := tx.Create(&form).Error
 			if err != nil {
+				log.Println(err.Error())
 				return err
 			}
 		}

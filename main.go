@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -49,6 +50,12 @@ func main() {
 	r := gin.Default()
 	r.MaxMultipartMemory = 8 << 20
 
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+
 	r.POST("/signup", auth.SignUp)
 	r.POST("/signin", auth.SignIn)
 	r.POST("/signout", auth.SignOut)
@@ -79,5 +86,5 @@ func main() {
 	authMiddle.GET("/trash/point", trash.PointList)
 	authMiddle.PATCH("/trash/point/:pid", trash.PointRecovery)
 	authMiddle.DELETE("/trash/point/:pid", trash.PointDelete)
-	r.Run()
+	r.Run(":8080")
 }

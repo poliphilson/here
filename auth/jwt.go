@@ -195,11 +195,11 @@ func CreateRefreshToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	redisClient := repository.Redis()
+	/*redisClient := repository.Redis()
 	err = redisClient.Set(context.Background(), rUuid, rToken, time.Duration(72)*time.Hour).Err()
 	if err != nil {
 		return "", err
-	}
+	}*/
 	return rToken, nil
 }
 

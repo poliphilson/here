@@ -40,6 +40,11 @@ func HereDelete(c *gin.Context) {
 			return err
 		}
 
+		err = tx.Where("hid = ?", hid).Delete(&models.HereAddress{}).Error
+		if err != nil {
+			return err
+		}
+
 		result := tx.Where("uid = ? AND hid = ? AND is_deleted = ?", uid, hid, true).Delete(&models.Here{})
 		if result.Error != nil {
 			return result.Error
